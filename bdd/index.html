@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WS LA POSTE NODE JS</title>
+</head>
+<body>
+<h1> Test node + Mysql</h1>
+
+<input type="text" id="nom_user" placeholder="nom"/><br/>
+<input type="text" id="pseudo_user" placeholder="pseudo"/><br/>
+<input type="text" id="nb_user" placeholder="nombre de clone ...."/><br/>
+<button id="add_user">Ajouter des clones!</button>
+
+<button id="fetch_user">Lister tout les clones!</button>
+
+<section id="liste_user"></section>
+
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io.connect('http://localhost:3000');
+
+    socket.on('fetch_users', function(data){
+        insereUsers(data)
+    });
+    socket.on('insert_return', function(data){
+        console.log(data);
+        alert(data);
+    });
+    function insereUsers(data){
+        $.each(data, function(key,value){
+            console.log(value);
+            $('#liste_user').append('<h1>ID:'+key+'-- '+value.name+' -- '+value.username+'</h1>');
+        })
+    }
+
+    $("#add_user").click(function(){
+
+        var nom = $("#nom_user").val();
+        var username = $("#pseudo_user").val();
+        var nb = $("#nb_user").val();
+
+        socket.emit("insert",{nom :nom,username:username,nb:nb});
+    })
+    $("#fetch_user").click(function(){
+        socket.emit("fetch_users");
+    })
+</script>
+</body>
+</html>

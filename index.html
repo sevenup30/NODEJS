@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WS Chat</title>
+    <style>
+        #zone_chat strong {
+            color: white;
+            background-color: black;
+            padding: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1> WorkShop CHAT</h1>
+
+<form action="/" method="post" id="formulaire_chat">
+    <input type="text" id="message" name="message" placeholder="Votre message..." size="100" autofocus/>
+    <input type="submit" id="envoi_message" value="Envoyer"/>
+</form>
+
+<section id="chat_zone">
+
+</section>
+
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // On connecte le client au serveur socket io
+        var socket = io.connect('http://localhost:8180');
+
+        // On demande le pseudo a l'utilisateur
+        var pseudo = prompt('Choisissez un pseudo');
+        socket.emit('nouveau_client',pseudo);
+        document.title = pseudo + ' - ' + document.title;
+
+        // Listener des messages envoyé par le broadcast du serveur
+        socket.on('message', function(data){
+           insereMessage(data.pseudo, data.message)
+        });
+
+        // Listener des nouveaux clients
+
+        socket.on('nouveau_client', function(pseudo){
+            $('#chat_zone').prepend('<p><em>'+ pseudo+'</em> vient de se connecter</p>');
+        });
+
+        // Envoie des messages vers le serveur
+
+        $('#formulaire_chat').submit(function(){
+            var message = $('#message').val();
+            socket.emit('message',message);
+            insereMessage(pseudo,message);
+            $('#message').val('').focus();
+
+            return false;
+        });
+
+        function insereMessage(pseudo,message){
+            $('#chat_zone').prepend('<p><strong>'+pseudo +'</strong> : '+ message+'</p>')
+        }
+    </script>
+</body>
+</html>

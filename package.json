@@ -1,0 +1,11 @@
+{
+  "name": "ws-chat",
+  "version": "0.0.1",
+  "dependencies": {
+    "express": "^4.16.2",
+    "socket.io": "^2.0.4",
+    "ent": "^2.2.0"
+  },
+  "author": "Martial",
+  "description": "WS la poste, chat en NJS et socket.io"
+}

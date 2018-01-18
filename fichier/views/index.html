@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>File Uploader - WS LAPOSTE</title>
+  <link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <span class="glyphicon glyphicon-cloud-upload"></span>
+            <h2>File Uploader</h2>
+            <div class="progress">
+              <div class="progress-bar" role="progressbar"></div>
+            </div>
+            <button class="btn btn-lg upload-btn" type="button">Upload File</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <input id="upload-input" type="file" name="uploads[]" multiple="multiple"></br>
+
+  <h1> WorkShop CHAT</h1>
+
+  <form action="/" method="post" id="formulaire_chat">
+    <input type="text" id="message" name="message" placeholder="Votre message..." size="100" autofocus/>
+    <input type="submit" id="envoi_message" value="Envoyer"/>
+  </form>
+
+  <section id="chat_zone">
+
+  </section>
+
+  <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+      // On connecte le client au serveur socket io
+      var socket = io.connect('http://localhost:8180');
+
+      // On demande le pseudo a l'utilisateur
+      var pseudo = prompt('Choisissez un pseudo');
+      socket.emit('nouveau_client',pseudo);
+      document.title = pseudo + ' - ' + document.title;
+
+      // Listener des messages envoyé par le broadcast du serveur
+      socket.on('message', function(data){
+          insereMessage(data.pseudo, data.message)
+      });
+
+      // Listener des nouveaux clients
+
+      socket.on('nouveau_client', function(pseudo){
+          $('#chat_zone').prepend('<p><em>'+ pseudo+'</em> vient de se connecter</p>');
+      });
+
+      // Envoie des messages vers le serveur
+
+      $('#formulaire_chat').submit(function(){
+          var message = $('#message').val();
+          socket.emit('message',message);
+          insereMessage(pseudo,message);
+          $('#message').val('').focus();
+
+          return false;
+      });
+
+      function insereMessage(pseudo,message){
+          $('#chat_zone').prepend('<p><strong>'+pseudo +'</strong> : '+ message+'</p>')
+      }
+  </script>
+
+  <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script src="javascripts/upload.js"></script>
+</body>
+</html>
